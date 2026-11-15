@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بوصلة تربية الأطفال</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a deep colored band holds the title and the searchable picker;
+   one white card overlaps it and lists the five sub-topics. The hue (--h) follows the chosen topic. */
+:root{
+  --h:28;
+  --bg:#f1f4f0;
+  --surface:#ffffff;
+  --ink:#15221c;
+  --muted:#58685f;
+  --line:#dce3dc;
+  --accent:hsl(var(--h) 64% 34%);
+  --accent-soft:hsl(var(--h) 62% 93%);
+  --band:hsl(var(--h) 46% 18%);
+  --band-glow:hsl(var(--h) 60% 32%);
+  --on-band:#f8f6ef;
+  --on-band-muted:hsl(var(--h) 32% 82%);
+  --on-accent:#ffffff;
+  --shadow:0 1px 2px rgb(20 35 28 / .06), 0 18px 40px -18px rgb(20 35 28 / .28);
+  --font-display:'Reem Kufi','IBM Plex Sans Arabic',Tahoma,sans-serif;
+  --font-body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1513;
+    --surface:#161f1c;
+    --ink:#e9efea;
+    --muted:#9babA3;
+    --line:#27332e;
+    --accent:hsl(var(--h) 70% 70%);
+    --accent-soft:hsl(var(--h) 38% 17%);
+    --band:hsl(var(--h) 40% 12%);
+    --band-glow:hsl(var(--h) 52% 22%);
+    --on-accent:#10160f;
+    --shadow:0 1px 2px rgb(0 0 0 / .4), 0 18px 40px -18px rgb(0 0 0 / .7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1513;
+  --surface:#161f1c;
+  --ink:#e9efea;
+  --muted:#9baba3;
+  --line:#27332e;
+  --accent:hsl(var(--h) 70% 70%);
+  --accent-soft:hsl(var(--h) 38% 17%);
+  --band:hsl(var(--h) 40% 12%);
+  --band-glow:hsl(var(--h) 52% 22%);
+  --on-accent:#10160f;
+  --shadow:0 1px 2px rgb(0 0 0 / .4), 0 18px 40px -18px rgb(0 0 0 / .7);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.7;
+}
+.wrap{width:min(100% - 32px, 760px);margin-inline:auto}
+svg.ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- band ---------- */
+.band{
+  position:relative;
+  background:
+    radial-gradient(60% 90% at 12% 0%, var(--band-glow) 0%, transparent 70%),
+    var(--band);
+  color:var(--on-band);
+  padding:44px 0 120px;
+  transition:background-color .5s ease;
+}
+.band-art{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.band-art svg{
+  position:absolute;inset-inline-end:-70px;top:-60px;
+  width:380px;height:380px;
+  stroke:var(--on-band);opacity:.13;fill:none;stroke-width:1;
+}
+.band .wrap{position:relative}
+.brand{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;font-weight:500;color:var(--on-band-muted);
+  margin:0 0 14px;
+}
+.brand svg{font-size:18px}
+h1{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:clamp(34px, 7.4vw, 56px);
+  line-height:1.25;
+  margin:0 0 10px;
+  text-wrap:balance;
+}
+.lede{
+  margin:0 0 28px;
+  max-width:34em;
+  color:var(--on-band-muted);
+  font-size:18px;
+}
+
+/* ---------- combobox ---------- */
+.combo{position:relative;z-index:20}
+.combo label{
+  display:block;font-weight:600;font-size:15px;margin-bottom:8px;color:var(--on-band);
+}
+.combo-box{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);color:var(--ink);
+  border-radius:16px;
+  padding:6px 8px 6px 6px;
+  padding-inline-start:16px;
+  box-shadow:var(--shadow);
+  border:2px solid transparent;
+  transition:border-color .2s;
+}
+.combo-box:focus-within{border-color:var(--accent)}
+.combo-box > svg{font-size:20px;color:var(--muted)}
+.combo input{
+  flex:1;min-width:0;
+  border:0;outline:0;background:transparent;color:inherit;
+  font:inherit;font-size:18px;font-weight:500;
+  padding:12px 0;
+}
+.combo input::placeholder{color:var(--muted);font-weight:400}
+.combo-toggle{
+  flex:none;width:44px;height:44px;border-radius:12px;border:0;cursor:pointer;
+  display:grid;place-items:center;
+  background:var(--accent-soft);color:var(--accent);
+  font-size:20px;
+  transition:background-color .3s, color .3s, transform .2s;
+}
+.combo-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.combo[data-open="true"] .combo-toggle svg{transform:rotate(180deg)}
+.combo-toggle svg{transition:transform .2s}
+.combo-meta{margin:8px 4px 0;font-size:14px;color:var(--on-band-muted);font-variant-numeric:tabular-nums}
+
+.combo-list{
+  position:absolute;inset-inline:0;top:calc(100% - 22px);
+  margin:0;padding:6px;list-style:none;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  max-height:336px;overflow-y:auto;overscroll-behavior:contain;
+}
+.combo-list[hidden]{display:none}
+.opt{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:11px;cursor:pointer;
+  --oh:28;
+}
+.opt-ic{
+  flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:19px;
+  background:hsl(var(--oh) 62% 93%);color:hsl(var(--oh) 64% 34%);
+}
+.opt-text{flex:1;min-width:0}
+.opt-title{display:block;font-weight:600;line-height:1.4}
+.opt-sub{display:block;font-size:13.5px;color:var(--muted);line-height:1.5}
+.opt-check{font-size:18px;color:var(--accent);visibility:hidden}
+.opt[aria-selected="true"] .opt-check{visibility:visible}
+.opt.is-active{background:var(--accent-soft)}
+.opt-empty{padding:18px 14px;color:var(--muted);text-align:center}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .opt-ic{background:hsl(var(--oh) 38% 20%);color:hsl(var(--oh) 70% 72%)}
+}
+:root[data-theme="dark"] .opt-ic{background:hsl(var(--oh) 38% 20%);color:hsl(var(--oh) 70% 72%)}
+
+/* ---------- result card ---------- */
+main{margin-top:-84px;position:relative;z-index:10;padding-bottom:40px}
+.card{
+  background:var(--surface);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card-head{
+  display:flex;gap:16px;align-items:center;
+  padding:24px 24px 20px;
+  border-bottom:1px solid var(--line);
+}
+.topic-ic{
+  flex:none;width:60px;height:60px;border-radius:18px;
+  display:grid;place-items:center;font-size:30px;
+  background:var(--accent);color:var(--on-accent);
+  transition:background-color .4s;
+}
+.card-head h2{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(22px, 4.6vw, 28px);line-height:1.35;margin:0;
+  text-wrap:balance;
+}
+.card-head p{margin:2px 0 0;color:var(--muted);font-size:15.5px}
+
+.subs{list-style:none;margin:0;padding:8px}
+.subs li{display:flex;align-items:center;gap:4px}
+.subs li + li{border-top:1px solid var(--line)}
+.sub{flex:1;min-width:0}
+.sub-copy{
+  flex:none;width:40px;height:40px;margin-inline-end:8px;border-radius:12px;cursor:pointer;
+  display:grid;place-items:center;font-size:18px;
+  background:transparent;color:var(--muted);border:1px solid var(--line);
+  transition:color .2s, border-color .2s, background-color .2s;
+}
+.sub-copy:hover{color:var(--accent);border-color:var(--accent)}
+.sub-copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sub-copy.done{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.toast{
+  position:fixed;inset-inline:16px;bottom:18px;margin-inline:auto;width:fit-content;max-width:calc(100% - 32px);
+  background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14.5px;
+  box-shadow:var(--shadow);z-index:50;overflow-wrap:anywhere;user-select:all;
+}
+.toast[hidden]{display:none}
+.sub{
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+  padding:16px;border-radius:14px;
+  color:inherit;text-decoration:none;
+  transition:background-color .2s;
+}
+.sub:hover{background:var(--accent-soft)}
+.sub:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.sub-ic{
+  width:50px;height:50px;border-radius:15px;display:grid;place-items:center;font-size:24px;
+  background:var(--accent-soft);color:var(--accent);
+  transition:background-color .2s, color .2s, transform .2s;
+}
+.sub:hover .sub-ic,.sub:focus-visible .sub-ic{background:var(--accent);color:var(--on-accent);transform:scale(1.06)}
+.sub-title{display:block;font-weight:600;font-size:17.5px;line-height:1.5}
+.sub-desc{display:block;color:var(--muted);font-size:15px;line-height:1.65}
+.sub-src{
+  display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;
+  margin-top:6px;font-size:13px;font-weight:500;color:var(--accent);
+}
+.sub-src .lang{
+  color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px;font-weight:400;line-height:1.7;
+}
+.sub-go{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;
+  color:var(--muted);border:1px solid var(--line);
+  transition:color .2s, border-color .2s, transform .2s;
+}
+.sub:hover .sub-go{color:var(--accent);border-color:var(--accent);transform:translate(-2px,-2px)}
+
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.subs li{animation:rise .45s both;animation-delay:calc(var(--i) * 55ms)}
+
+.note{
+  margin:18px 4px 0;font-size:14px;color:var(--muted);
+}
+
+@media (max-width:480px){
+  body{font-size:16px}
+  .band{padding-top:30px}
+  .card-head{padding:18px 16px 16px;gap:12px}
+  .topic-ic{width:50px;height:50px;border-radius:15px;font-size:25px}
+  .sub{padding:14px 8px;gap:12px}
+  .sub-ic{width:44px;height:44px;border-radius:13px;font-size:21px}
+  .sub-go{display:none}
+  .sub{grid-template-columns:auto 1fr}
+  .sub-copy{margin-inline-end:2px;width:36px;height:36px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="band-art" aria-hidden="true">
+    <svg viewBox="0 0 200 200">
+      <g transform="translate(100 100)">
+        <rect x="-30" y="-30" width="60" height="60"/><rect x="-30" y="-30" width="60" height="60" transform="rotate(45)"/>
+        <rect x="-50" y="-50" width="100" height="100"/><rect x="-50" y="-50" width="100" height="100" transform="rotate(45)"/>
+        <rect x="-70" y="-70" width="140" height="140"/><rect x="-70" y="-70" width="140" height="140" transform="rotate(45)"/>
+        <circle r="99"/><circle r="12"/>
+      </g>
+    </svg>
+  </div>
+  <div class="wrap">
+    <p class="brand">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      دليل مختصر بمصادر موثقة
+    </p>
+    <h1>بوصلة تربية الأطفال</h1>
+    <p class="lede">اختر موضوعاً لتظهر خمس نقاط عملية. اضغط على أي نقطة لتنتقل إلى مصدرها الأصلي.</p>
+
+    <div class="combo" id="combo" data-open="false">
+      <label for="topic-search">الموضوع</label>
+      <div class="combo-box">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="topic-search" type="text" role="combobox" autocomplete="off" spellcheck="false"
+               aria-expanded="false" aria-controls="topic-list" aria-autocomplete="list"
+               placeholder="ابحث أو اختر موضوعاً">
+        <button class="combo-toggle" id="topic-toggle" type="button" tabindex="-1" aria-label="إظهار قائمة المواضيع">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+      <ul class="combo-list" id="topic-list" role="listbox" aria-label="المواضيع" hidden></ul>
+      <p class="combo-meta" id="topic-meta" aria-live="polite"></p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card" aria-live="polite">
+    <div class="card-head">
+      <div class="topic-ic" id="topic-ic" aria-hidden="true"></div>
+      <div>
+        <h2 id="topic-title"></h2>
+        <p id="topic-blurb"></p>
+      </div>
+    </div>
+    <ul class="subs" id="subs"></ul>
+  </section>
+  <p class="note">كل رابط يفتح صفحة المصدر نفسها (اليونيسف، منظمة الصحة العالمية، مايو كلينك). روجعت الروابط في نوفمبر 2026. المحتوى للتوعية ولا يغني عن استشارة الطبيب أو المختص.</p>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* ============================================================
+   البيانات: لإضافة موضوع جديد انسخ كائناً كاملاً وعدّل محتواه.
+   h = درجة اللون (0-360)، icon = اسم أيقونة من ICONS بالأسفل.
+   ============================================================ */
+const TOPICS = [
+  {
+    id: 'discipline', h: 28, icon: 'star',
+    title: 'التربية الإيجابية والانضباط',
+    blurb: 'حدود واضحة وعلاقة دافئة، من غير صراخ ولا ضرب.',
+    keys: 'تأديب عقاب سلوك عناد غضب قواعد ضرب صراخ',
+    subs: [
+      { icon: 'mute', title: 'التأديب بلا صراخ ولا ضرب',
+        desc: 'مدح السلوك الجيد، توقعات واضحة، إلهاء ذكي، وعواقب هادئة.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/child-care/how-discipline-your-child-smart-and-healthy-way' },
+      { icon: 'heart', title: 'أساسيات التنشئة الإيجابية',
+        desc: 'كيف تحاور طفلك، وتسمّي المشاعر، وتكون قدوة في ضبط النفس.',
+        org: 'اليونيسف، دولة فلسطين', lang: 'عربي',
+        url: 'https://www.unicef.org/sop/ar/%D8%A7%D9%84%D8%AA%D9%86%D8%B4%D8%A6%D8%A9-%D8%A7%D9%84%D8%A5%D9%8A%D8%AC%D8%A7%D8%A8%D9%8A%D8%A9/%D9%82%D8%B5%D8%B5' },
+      { icon: 'zap', title: 'نوبات الغضب في السنوات الأولى',
+        desc: 'لماذا تحدث، وكيف تتعامل معها، ومتى تستشير مختصاً.',
+        org: 'اليونيسف، الأردن', lang: 'عربي',
+        url: 'https://www.unicef.org/jordan/ar/%D8%A7%D8%B9%D8%B1%D9%81-%D9%88%D8%A7%D9%81%D9%87%D9%85-%D8%B7%D9%81%D9%84%D9%83/blog' },
+      { icon: 'chat', title: 'التواصل الفعّال مع الطفل الصغير',
+        desc: 'الإنصات، تسمية المشاعر، المدح المحدد، وتجنب الرشوة.',
+        org: 'اليونيسف، الأردن', lang: 'English',
+        url: 'https://www.unicef.org/jordan/stories/how-communicate-effectively-your-young-child' },
+      { icon: 'check', title: 'قواعد وعواقب لعمر 7 إلى 12 سنة',
+        desc: 'الطلب الإيجابي بدل الأمر، والعواقب بدل العقاب، وخطوات حل المشكلات.',
+        org: 'اليونيسف، مصر', lang: 'English',
+        url: 'https://www.unicef.org/egypt/raising-younger-children' }
+    ]
+  },
+  {
+    id: 'feelings', h: 344, icon: 'heart',
+    title: 'الصحة النفسية والمشاعر',
+    blurb: 'كيف تفتح الحديث مع طفلك، ومتى تطلب المساعدة.',
+    keys: 'نفسية قلق خوف حزن اكتئاب هلع مراهق مشاعر عواطف',
+    subs: [
+      { icon: 'smile', title: 'حديث المشاعر: 6 إلى 10 سنوات',
+        desc: 'استغل مواقف اليوم العادية لتسأل طفلك عن شعوره وتبني ثقته.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/mental-health/conversation-starters-6-10-years' },
+      { icon: 'chat', title: 'حديث المشاعر: 11 إلى 13 سنة',
+        desc: 'ماذا تقول وماذا تتجنب عندما تلاحظ تغيراً في مزاجه أو سلوكه.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/mental-health/conversation-starters-11-13-years' },
+      { icon: 'users', title: 'ساعد ابنك المراهق على التعبير',
+        desc: 'ابدأ بالتعاطف قبل النصيحة، وساعده على تسمية شعوره بدقة.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/mental-health/3-ways-help-teens-express-emotions' },
+      { icon: 'rain', title: 'علامات الاكتئاب عند الأطفال',
+        desc: 'الأعراض التي تستحق الانتباه، وطرق المساندة، ومتى تطلب مساعدة مختص.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/mental-health/what-is-depression' },
+      { icon: 'pulse', title: 'نوبات الهلع',
+        desc: 'كيف تبدو النوبة، وتمارين التنفس والحواس التي تعيد الهدوء.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/mental-health/what-are-panic-attacks' }
+    ]
+  },
+  {
+    id: 'nutrition', h: 138, icon: 'apple',
+    title: 'التغذية الصحية',
+    blurb: 'من الرضاعة إلى طبق العائلة، بالكميات المناسبة لكل عمر.',
+    keys: 'أكل طعام رضاعة فطام سكر وجبات غذاء خضار فواكه',
+    subs: [
+      { icon: 'drop', title: 'الرضاعة الطبيعية',
+        desc: 'تبدأ في الساعة الأولى، وتكون خالصة ستة أشهر، وتستمر مع الطعام حتى عامين أو أكثر.',
+        org: 'منظمة الصحة العالمية', lang: 'عربي',
+        url: 'https://www.who.int/ar/health-topics/breastfeeding' },
+      { icon: 'utensils', title: 'بدء الطعام عند 6 أشهر',
+        desc: 'عدد الوجبات وقوام الطعام لكل عمر، وما يجب تجنبه.',
+        org: 'منظمة الصحة العالمية، شرق المتوسط', lang: 'عربي',
+        url: 'https://www.emro.who.int/ar/nutrition/breastfeeding/' },
+      { icon: 'apple', title: 'النظام الغذائي الصحي',
+        desc: 'كمية الفواكه والخضراوات اليومية للأطفال، وحدود الملح والسكر.',
+        org: 'منظمة الصحة العالمية', lang: 'عربي',
+        url: 'https://www.who.int/ar/news-room/fact-sheets/detail/healthy-diet' },
+      { icon: 'glass', title: 'تقليل السكر',
+        desc: 'السكريات الحرة أقل من 10% من الطاقة اليومية، وأين يختبئ السكر.',
+        org: 'منظمة الصحة العالمية', lang: 'عربي',
+        url: 'https://www.who.int/ar/news/item/13-05-1436-who-calls-on-countries-to-reduce-sugars-intake-among-adults-and-children' },
+      { icon: 'pie', title: 'حصص الطعام حسب العمر',
+        desc: 'جداول يومية للبروتين والفواكه والخضراوات والحبوب والألبان من عمر سنتين.',
+        org: 'مايو كلينك', lang: 'English',
+        url: 'https://www.mayoclinic.org/healthy-lifestyle/childrens-health/in-depth/nutrition-for-kids/art-20049335' }
+    ]
+  },
+  {
+    id: 'sleep', h: 246, icon: 'moon',
+    title: 'النوم والحركة',
+    blurb: 'ساعات النوم لكل عمر، وروتين هادئ قبل السرير.',
+    keys: 'نوم سهر قيلولة سرير رضيع لعب نشاط رياضة',
+    subs: [
+      { icon: 'moon', title: 'نوم حديث الولادة',
+        desc: 'ينام حتى 18 ساعة متقطعة في اليوم، وكيف تضعه لينام بأمان.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/child-care/what-you-need-know-about-newborn-sleep' },
+      { icon: 'bed', title: 'النوم الآمن للرضيع',
+        desc: 'على ظهره، في مساحة خالية من الوسائد والألعاب والأغطية.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/child-care/baby-sleep' },
+      { icon: 'sun', title: 'قيلولة الرضّع',
+        desc: 'كم قيلولة يحتاجها الطفل حسب عمره، وكيف تهيئه لها.',
+        org: 'مايو كلينك', lang: 'عربي',
+        url: 'https://www.mayoclinic.org/ar/healthy-lifestyle/infant-and-toddler-health/in-depth/baby-naps/art-20047421?p=1' },
+      { icon: 'clock', title: 'مشاكل وقت النوم قبل المدرسة',
+        desc: 'روتين هادئ وثابت، وحلول لرفض النوم والخروج المتكرر من السرير.',
+        org: 'مايو كلينك', lang: 'English',
+        url: 'https://www.mayoclinic.org/healthy-lifestyle/childrens-health/in-depth/child-sleep/art-20044338' },
+      { icon: 'ball', title: 'النوم والحركة دون 5 سنوات',
+        desc: 'ساعات النوم الموصى بها لكل عمر، و180 دقيقة حركة يومياً من عمر سنة.',
+        org: 'منظمة الصحة العالمية', lang: 'عربي',
+        url: 'https://www.who.int/ar/news/item/19-08-1440-to-grow-up-healthy-children-need-to-sit-less-and-play-more' }
+    ]
+  },
+  {
+    id: 'screens', h: 196, icon: 'shield',
+    title: 'الشاشات والأمان الرقمي',
+    blurb: 'وقت شاشة متوازن، وإنترنت أكثر أماناً لطفلك.',
+    keys: 'جوال موبايل تابلت ألعاب إنترنت تنمر سوشيال تلفزيون شاشة',
+    subs: [
+      { icon: 'monitor', title: 'قواعد وقت الشاشة',
+        desc: 'حدود حسب العمر، وأوقات وأماكن بلا أجهزة، وشاشات خارج غرفة النوم.',
+        org: 'مايو كلينك', lang: 'English',
+        url: 'https://www.mayoclinic.org/healthy-lifestyle/childrens-health/in-depth/screen-time/art-20047952' },
+      { icon: 'hourglass', title: 'متى يصبح وقت الشاشة زائداً؟',
+        desc: 'عندما يؤثر على النوم أو المزاج أو الدراسة، مع نصائح عملية.',
+        org: 'أخبار مايو كلينك', lang: 'عربي',
+        url: 'https://newsnetwork.mayoclinic.org/ar/2023/06/28/%D8%AA%D9%86%D8%A8%D9%8A%D9%87-%D9%85%D9%86-%D8%AE%D8%A8%D9%8A%D8%B1-%D9%85%D8%AA%D9%89-%D9%8A%D8%B9%D8%AA%D8%A8%D8%B1-%D9%88%D9%82%D8%AA-%D8%A7%D9%84%D8%B4%D8%A7%D8%B4%D8%A9-%D9%84%D8%A3%D8%A8%D9%86/' },
+      { icon: 'alert', title: 'التنمر عبر الإنترنت',
+        desc: 'ما هو، وكيف يؤثر، ولمن تتحدث، وكيف تبلّغ عنه.',
+        org: 'اليونيسف، العراق', lang: 'عربي',
+        url: 'https://www.unicef.org/iraq/ar/%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%91%D8%B1-%D8%B9%D8%A8%D8%B1-%D8%A7%D9%84%D8%A5%D9%86%D8%AA%D8%B1%D9%86%D8%AA-%D9%85%D8%A7-%D9%87%D9%88-%D9%88%D9%83%D9%8A%D9%81-%D9%86%D9%88%D9%82%D9%81%D9%87' },
+      { icon: 'lock', title: 'حماية الطفل على الإنترنت',
+        desc: 'أدوات الرقابة الأبوية، وقضاء وقت معه على الإنترنت، والقدوة في العادات.',
+        org: 'اليونيسف، الشرق الأوسط وشمال أفريقيا', lang: 'English',
+        url: 'https://www.unicef.org/mena/how-keep-your-child-safe-online' },
+      { icon: 'buoy', title: 'بعد تجربة سيئة على الإنترنت',
+        desc: 'اهدأ، استمع، طمئنه، ثم وثّق ما حدث وبلّغ عند الحاجة.',
+        org: 'اليونيسف', lang: 'English',
+        url: 'https://www.unicef.org/parenting/child-care/supporting-child-negative-online-experience' }
+    ]
+  }
+];
+
+const ICONS = {
+  star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+  apple:'<path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/>',
+  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  mute:'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>',
+  zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  check:'<path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  smile:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  rain:'<path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/>',
+  pulse:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  drop:'<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+  utensils:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  glass:'<path d="M6 3h12l-1.5 18h-9z"/><path d="M6.6 10h10.8"/><path d="M12 3V1"/>',
+  pie:'<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+  bed:'<path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  ball:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/>',
+  monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
+  hourglass:'<path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>',
+  alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  buoy:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m4.93 19.07 4.24-4.24"/>',
+  tick:'<path d="M20 6 9 17l-5-5"/>',
+  out:'<path d="M17 17 7 7"/><path d="M7 17V7h10"/>',
+  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
+};
+const icon = name => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || ICONS.star) + '</svg>';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* توحيد الحروف العربية المتشابهة في البحث: أ/إ/آ = ا ، ى/ئ = ي ، ة = ه ، بلا تشكيل */
+const norm = s => String(s)
+  .normalize('NFKD')
+  .replace(/[ً-ٰٟـ]/g, '')
+  .replace(/[أإآٱ]/g, 'ا')
+  .replace(/[ئى]/g, 'ي')
+  .replace(/ؤ/g, 'و')
+  .replace(/ة/g, 'ه')
+  .replace(/ء/g, '')
+  .toLowerCase()
+  .replace(/\s+/g, ' ')
+  .trim();
+
+TOPICS.forEach(t => {
+  t._hay = norm([t.title, t.blurb, t.keys || '', ...t.subs.map(s => s.title)].join(' '));
+});
+
+const $ = id => document.getElementById(id);
+const combo = $('combo'), input = $('topic-search'), list = $('topic-list'),
+      meta = $('topic-meta'), toggle = $('topic-toggle');
+
+/* ملف مستقل (مُصدَّر): افتح الرابط في نفس الصفحة. داخل إطار العرض: افتحه في نافذة جديدة. */
+const STANDALONE = (() => { try { return window.top === window.self; } catch (e) { return false; } })();
+const LINK_ATTRS = STANDALONE ? '' : ' target="_blank" rel="noopener noreferrer"';
+
+let current = TOPICS[0];
+let shown = TOPICS.slice();
+let active = 0;
+let open = false;
+
+try {
+  const saved = localStorage.getItem('parenting-topic');
+  const found = TOPICS.find(t => t.id === saved);
+  if (found) current = found;
+} catch (e) {}
+
+function renderTopic(t) {
+  current = t;
+  document.documentElement.style.setProperty('--h', t.h);
+  $('topic-ic').innerHTML = icon(t.icon);
+  $('topic-title').textContent = t.title;
+  $('topic-blurb').textContent = t.blurb;
+  $('subs').innerHTML = t.subs.map((s, i) =>
+    '<li style="--i:' + i + '">' +
+      '<a class="sub" href="' + esc(s.url) + '"' + LINK_ATTRS + ' ' +
+         'title="افتح المصدر: ' + esc(s.org) + '">' +
+        '<span class="sub-ic">' + icon(s.icon) + '</span>' +
+        '<span>' +
+          '<span class="sub-title">' + esc(s.title) + '</span>' +
+          '<span class="sub-desc">' + esc(s.desc) + '</span>' +
+          '<span class="sub-src">' + esc(s.org) + '<span class="lang">' + esc(s.lang) + '</span></span>' +
+        '</span>' +
+        '<span class="sub-go">' + icon('out') + '</span>' +
+      '</a>' +
+      '<button class="sub-copy" type="button" data-url="' + esc(s.url) + '" ' +
+        'aria-label="انسخ رابط المصدر: ' + esc(s.title) + '" title="انسخ الرابط">' + icon('copy') + '</button>' +
+    '</li>').join('');
+  input.value = t.title;
+  try { localStorage.setItem('parenting-topic', t.id); } catch (e) {}
+}
+
+function renderList() {
+  if (!shown.length) {
+    list.innerHTML = '<li class="opt-empty" role="presentation">لا يوجد موضوع بهذه الكلمة. جرّب كلمة أخرى.</li>';
+    input.removeAttribute('aria-activedescendant');
+    return;
+  }
+  list.innerHTML = shown.map((t, i) =>
+    '<li class="opt' + (i === active ? ' is-active' : '') + '" role="option" id="opt-' + t.id + '" ' +
+        'data-id="' + t.id + '" aria-selected="' + (t === current) + '" style="--oh:' + t.h + '">' +
+      '<span class="opt-ic">' + icon(t.icon) + '</span>' +
+      '<span class="opt-text"><span class="opt-title">' + esc(t.title) + '</span>' +
+        '<span class="opt-sub">' + esc(t.blurb) + '</span></span>' +
+      '<span class="opt-check">' + icon('tick') + '</span>' +
+    '</li>').join('');
+  const el = list.children[active];
+  if (el) {
+    input.setAttribute('aria-activedescendant', el.id);
+    el.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+function setMeta(filtering) {
+  meta.textContent = filtering
+    ? 'النتائج: ' + shown.length + ' من ' + TOPICS.length
+    : 'عدد المواضيع: ' + TOPICS.length + '. اكتب أي كلمة للبحث.';
+}
+
+function filter(q) {
+  const n = norm(q);
+  shown = n ? TOPICS.filter(t => n.split(' ').every(w => t._hay.includes(w))) : TOPICS.slice();
+  active = 0;
+  setMeta(!!n);
+  renderList();
+}
+
+function openList(showAll) {
+  if (showAll) {
+    shown = TOPICS.slice();
+    active = Math.max(0, shown.indexOf(current));
+    setMeta(false);
+  }
+  open = true;
+  list.hidden = false;
+  combo.dataset.open = 'true';
+  input.setAttribute('aria-expanded', 'true');
+  renderList();
+}
+
+function closeList() {
+  open = false;
+  list.hidden = true;
+  combo.dataset.open = 'false';
+  input.setAttribute('aria-expanded', 'false');
+  input.removeAttribute('aria-activedescendant');
+  input.value = current.title;
+  shown = TOPICS.slice();
+  setMeta(false);
+}
+
+function pick(t) {
+  renderTopic(t);
+  closeList();
+}
+
+input.addEventListener('focus', () => { openList(true); input.select(); });
+input.addEventListener('click', () => { if (!open) { openList(true); input.select(); } });
+input.addEventListener('input', () => { if (!open) openList(false); filter(input.value); });
+input.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (!open) { openList(true); return; }
+    if (!shown.length) return;
+    active = (active + (e.key === 'ArrowDown' ? 1 : -1) + shown.length) % shown.length;
+    renderList();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (open && shown[active]) { pick(shown[active]); input.blur(); }
+  } else if (e.key === 'Escape') {
+    if (open) { e.preventDefault(); closeList(); input.blur(); }
+  } else if (e.key === 'Tab') {
+    if (open) closeList();
+  }
+});
+toggle.addEventListener('mousedown', e => e.preventDefault());
+toggle.addEventListener('click', () => {
+  if (open) { closeList(); input.blur(); }
+  else { input.focus(); }
+});
+list.addEventListener('mousedown', e => e.preventDefault());
+list.addEventListener('click', e => {
+  const li = e.target.closest('.opt');
+  if (!li) return;
+  const t = TOPICS.find(x => x.id === li.dataset.id);
+  if (t) { pick(t); input.blur(); }
+});
+list.addEventListener('mousemove', e => {
+  const li = e.target.closest('.opt');
+  if (!li) return;
+  const i = Array.prototype.indexOf.call(list.children, li);
+  if (i !== active && i > -1) {
+    active = i;
+    Array.prototype.forEach.call(list.children, (c, k) => c.classList.toggle('is-active', k === i));
+    input.setAttribute('aria-activedescendant', li.id);
+  }
+});
+document.addEventListener('pointerdown', e => {
+  if (open && !combo.contains(e.target)) closeList();
+});
+
+const toast = $('toast');
+let toastTimer;
+function showToast(text, ms) {
+  toast.textContent = text;
+  toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.hidden = true; }, ms);
+}
+function legacyCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+$('subs').addEventListener('click', e => {
+  const btn = e.target.closest('.sub-copy');
+  if (!btn) return;
+  const url = btn.dataset.url;
+  const done = () => {
+    btn.classList.add('done'); btn.innerHTML = icon('tick');
+    showToast('تم نسخ الرابط. الصقه في المتصفح.', 2600);
+    setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = icon('copy'); }, 1800);
+  };
+  const fail = () => { if (legacyCopy(url)) done(); else showToast(url, 12000); };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fail);
+    else fail();
+  } catch (err) { fail(); }
+});
+
+/* داخل إطار معاينة: إن لم يُفتح الرابط خلال لحظة، جرّب طرقاً أخرى لفتحه. */
+let leftPage = false;
+window.addEventListener('blur', () => { leftPage = true; });
+document.addEventListener('visibilitychange', () => { if (document.hidden) leftPage = true; });
+$('subs').addEventListener('click', e => {
+  const a = e.target.closest('a.sub');
+  if (!a || STANDALONE) return;
+  const url = a.href;
+  leftPage = false;
+  setTimeout(() => {
+    if (leftPage) return;
+    let w = null;
+    try { w = window.open(url, '_blank'); } catch (err) {}
+    if (w) { try { w.opener = null; } catch (err) {} return; }
+    try { window.top.location.href = url; return; } catch (err) {}
+    legacyCopy(url);
+    showToast('هذه المعاينة تمنع فتح الروابط. افتح الملف في متصفح مثل Chrome وستفتح مباشرة.', 9000);
+  }, 800);
+});
+
+renderTopic(current);
+setMeta(false);
+</script>
+</body>
+</html>
